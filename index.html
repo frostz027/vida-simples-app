@@ -209,10 +209,7 @@
                     <button class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-xl text-sm">
                         Salvar Configurações
                     </button>
-                    <div class="bg-gray-50 p-4 rounded-xl shadow-sm">
-                        <p class="text-gray-700 font-medium">Seu ID de Usuário:</p>
-                        <p id="user-id-display" class="text-sm text-gray-600 break-all">Carregando...</p>
-                    </div>
+                    <!-- Removido o display do ID de Usuário, pois não há autenticação -->
                 </div>
             </div>
         </div>
@@ -246,73 +243,11 @@
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
         // Exibir modal de mensagem
         function showMessageModal(message) {
             document.getElementById('modal-message-text').innerText = message;
             document.getElementById('message-modal').style.display = 'flex';
-        }
-
-        // Variáveis globais para Firebase e usuário
-        let app;
-        let db;
-        let auth;
-        let isAuthReady = false; // Flag para indicar se a autenticação foi concluída
-
-        // --- Configuração do Firebase ---
-        // As variáveis __app_id, __firebase_config e __initial_auth_token são fornecidas pelo ambiente Canvas
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-
-        // Inicializar Firebase e Firestore
-        try {
-            app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            auth = getAuth(app);
-            console.log('Firebase e Firestore inicializados.');
-        } catch (error) {
-            console.error('Erro ao inicializar Firebase:', error);
-            showMessageModal('Erro ao inicializar o aplicativo. Tente novamente.');
-        }
-
-        // Listener de estado de autenticação
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                console.log('Usuário autenticado:', user.uid);
-                document.getElementById('user-id-display').innerText = user.uid; // Exibir UID na Configuração
-            } else {
-                // Se não há usuário, tenta autenticar anonimamente
-                try {
-                    await signInAnonymously(auth);
-                    console.log('Autenticado anonimamente. User ID:', auth.currentUser?.uid);
-                    document.getElementById('user-id-display').innerText = auth.currentUser?.uid || 'Erro ao obter ID'; // Exibir UID
-                } catch (error) {
-                    console.error('Erro na autenticação anônima:', error);
-                    showMessageModal('Não foi possível fazer login anônimo. O progresso não será salvo.');
-                    document.getElementById('user-id-display').innerText = 'Não autenticado'; // Indicar falha
-                }
-            }
-            isAuthReady = true; // Define a flag como true após a verificação inicial de autenticação
-            console.log('Autenticação pronta. User ID final:', auth.currentUser?.uid || 'N/A');
-            setupRealtimeListener(); // Configura o listener do Firestore após a autenticação
-        });
-
-        // Tenta fazer login com o token personalizado se disponível
-        if (initialAuthToken) {
-            signInWithCustomToken(auth, initialAuthToken)
-                .then((userCredential) => {
-                    console.log('Login com token personalizado bem-sucedido:', userCredential.user.uid);
-                })
-                .catch((error) => {
-                    console.error('Erro no login com token personalizado:', error);
-                    // Se o token falhar, onAuthStateChanged vai tentar login anônimo
-                });
         }
 
         // --- Variáveis de estado do App (default) ---
@@ -406,63 +341,11 @@
             overallProgressBar.style.width = `${Math.round(overallProgress)}%`;
         }
 
-        // --- Funções para interagir com o Firestore ---
-        async function saveHabitsData() {
-            const currentUid = auth.currentUser?.uid;
-            if (!isAuthReady || !currentUid || !db) {
-                console.warn('Firebase, UID do usuário ou banco de dados não estão prontos para salvar dados.');
-                showMessageModal('Não foi possível salvar o progresso. Verifique sua conexão ou tente novamente.');
-                return;
-            }
-            try {
-                // O caminho para dados privados é /artifacts/{appId}/users/{userId}/{your_collection_name}
-                const habitsDocRef = doc(db, `artifacts/${appId}/users/${currentUid}/habits`, 'current_day_habits');
-                await setDoc(habitsDocRef, {
-                    waterCount: waterCount,
-                    walkCompleted: walkCompleted,
-                    fruitCompleted: fruitCompleted,
-                    lastUpdated: new Date()
-                }, { merge: true }); // Usar merge para não sobrescrever outros campos
-                console.log('Dados de hábitos salvos com sucesso!');
-            } catch (error) {
-                console.error('Erro ao salvar dados de hábitos:', error);
-                showMessageModal('Erro ao salvar o progresso. Tente novamente.');
-            }
-        }
-
-        function setupRealtimeListener() {
-            const currentUid = auth.currentUser?.uid;
-            if (!isAuthReady || !currentUid || !db) {
-                console.warn('Firebase, UID do usuário ou banco de dados não estão prontos para configurar o listener.');
-                return;
-            }
-            // O caminho para dados privados é /artifacts/{appId}/users/{userId}/{your_collection_name}
-            const habitsDocRef = doc(db, `artifacts/${appId}/users/${currentUid}/habits`, 'current_day_habits');
-            onSnapshot(habitsDocRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    waterCount = data.waterCount || 0;
-                    walkCompleted = data.walkCompleted || false;
-                    fruitCompleted = data.fruitCompleted || false;
-                    console.log('Dados de hábitos carregados:', data);
-                } else {
-                    console.log('Nenhum dado de hábito encontrado. Usando padrões.');
-                    // Inicializa os dados no Firestore se não existirem
-                    saveHabitsData();
-                }
-                updateUI(); // Atualiza a UI com os dados carregados ou padrão
-            }, (error) => {
-                console.error('Erro ao receber updates do Firestore:', error);
-                // Exibir erro no modal para o usuário
-                showMessageModal('Erro ao carregar seu progresso. Verifique as regras do Firestore. Detalhes no console.');
-            });
-        }
-
         // --- Event Listeners para botões de ação dos hábitos ---
         addWaterBtn.addEventListener('click', () => {
             if (waterCount < targetWater) {
                 waterCount++;
-                saveHabitsData(); // Salva no Firestore
+                updateUI(); // Atualiza a UI imediatamente
             } else {
                 showMessageModal('Você já atingiu sua meta de água para hoje!');
             }
@@ -470,12 +353,12 @@
 
         toggleWalkBtn.addEventListener('click', () => {
             walkCompleted = !walkCompleted; // Alterna o estado
-            saveHabitsData(); // Salva no Firestore
+            updateUI(); // Atualiza a UI imediatamente
         });
 
         toggleFruitBtn.addEventListener('click', () => {
             fruitCompleted = !fruitCompleted; // Alterna o estado
-            saveHabitsData(); // Salva no Firestore
+            updateUI(); // Atualiza a UI imediatamente
         });
 
         watchVideoBtn.addEventListener('click', () => {
@@ -515,8 +398,7 @@
 
         // Exibir a seção de Início por padrão ao carregar
         window.onload = () => {
-             // onAuthStateChanged irá chamar setupRealtimeListener quando estiver pronto.
-             // Não há necessidade de chamar updateUI aqui diretamente, pois onSnapshot fará isso.
+             updateUI(); // Garante que a UI seja inicializada corretamente
              showSection('home'); // Garante que a seção inicial seja exibida
         };
     </script>
