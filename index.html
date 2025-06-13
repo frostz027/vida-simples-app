@@ -244,8 +244,11 @@
     </div>
 
     <script type="module">
+        console.log('Script principal carregado!');
+
         // Exibir modal de mensagem
         function showMessageModal(message) {
+            console.log('Exibindo modal de mensagem:', message);
             document.getElementById('modal-message-text').innerText = message;
             document.getElementById('message-modal').style.display = 'flex';
         }
@@ -258,112 +261,167 @@
         const totalHabits = 3; // Água, Caminhada, Fruta
 
         // --- Referências aos elementos HTML ---
-        const waterProgressText = document.getElementById('water-progress-text');
-        const waterProgressBar = document.getElementById('water-progress-bar');
-        const addWaterBtn = document.getElementById('add-water-btn');
-        const walkStatusText = document.getElementById('walk-status-text');
-        const toggleWalkBtn = document.getElementById('toggle-walk-btn');
-        const fruitStatusText = document.getElementById('fruit-status-text');
-        const toggleFruitBtn = document.getElementById('toggle-fruit-btn');
-        const overallProgressPercentage = document.getElementById('overall-progress-percentage');
-        const overallProgressBar = document.getElementById('overall-progress-bar');
-        const watchVideoBtn = document.getElementById('watch-video-btn');
+        // Adicionando um try-catch para cada getElementById para depuração mais robusta
+        let waterProgressText, waterProgressBar, addWaterBtn, walkStatusText, toggleWalkBtn, fruitStatusText, toggleFruitBtn, overallProgressPercentage, overallProgressBar, watchVideoBtn;
+        let homeSection, homeTipsSection, progressSection, tipsSection, settingsSection;
+        let navHomeBtn, navProgressBtn, navTipsBtn, navSettingsBtn;
 
-        // Referências às seções
-        const homeSection = document.getElementById('home-section');
-        const homeTipsSection = document.getElementById('home-tips-section');
-        const progressSection = document.getElementById('progress-section');
-        const tipsSection = document.getElementById('tips-section');
-        const settingsSection = document.getElementById('settings-section');
+        try {
+            waterProgressText = document.getElementById('water-progress-text');
+            waterProgressBar = document.getElementById('water-progress-bar');
+            addWaterBtn = document.getElementById('add-water-btn');
+            walkStatusText = document.getElementById('walk-status-text');
+            toggleWalkBtn = document.getElementById('toggle-walk-btn');
+            fruitStatusText = document.getElementById('fruit-status-text');
+            toggleFruitBtn = document.getElementById('toggle-fruit-btn');
+            overallProgressPercentage = document.getElementById('overall-progress-percentage');
+            overallProgressBar = document.getElementById('overall-progress-bar');
+            watchVideoBtn = document.getElementById('watch-video-btn');
 
-        // Referências aos botões de navegação
-        const navHomeBtn = document.getElementById('nav-home');
-        const navProgressBtn = document.getElementById('nav-progress');
-        const navTipsBtn = document.getElementById('nav-tips');
-        const navSettingsBtn = document.getElementById('nav-settings');
+            homeSection = document.getElementById('home-section');
+            homeTipsSection = document.getElementById('home-tips-section');
+            progressSection = document.getElementById('progress-section');
+            tipsSection = document.getElementById('tips-section');
+            settingsSection = document.getElementById('settings-section');
+
+            navHomeBtn = document.getElementById('nav-home');
+            navProgressBtn = document.getElementById('nav-progress');
+            navTipsBtn = document.getElementById('nav-tips');
+            navSettingsBtn = document.getElementById('nav-settings');
+            console.log('Todas as referências HTML obtidas com sucesso.');
+        } catch (error) {
+            console.error('Erro ao obter referência de elemento HTML:', error);
+            showMessageModal('Erro interno: O aplicativo não pode inicializar corretamente.');
+        }
+
 
         // --- Funções para atualizar a UI ---
         function updateUI() {
+            console.log('updateUI() chamado. waterCount:', waterCount, 'walkCompleted:', walkCompleted, 'fruitCompleted:', fruitCompleted);
+
             // Atualizar água
-            waterProgressText.innerText = `${waterCount}/${targetWater} copos concluídos`;
-            const waterProgressWidth = (waterCount / targetWater) * 100;
-            waterProgressBar.style.width = `${Math.min(waterProgressWidth, 100)}%`; // Limita a 100%
-            if (waterCount >= targetWater) {
-                addWaterBtn.disabled = true;
-                addWaterBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
-                addWaterBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
-                addWaterBtn.innerText = '✓';
+            if (waterProgressText && waterProgressBar && addWaterBtn) {
+                waterProgressText.innerText = `${waterCount}/${targetWater} copos concluídos`;
+                const waterProgressWidth = (waterCount / targetWater) * 100;
+                waterProgressBar.style.width = `${Math.min(waterProgressWidth, 100)}%`; // Limita a 100%
+                if (waterCount >= targetWater) {
+                    addWaterBtn.disabled = true;
+                    addWaterBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                    addWaterBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    addWaterBtn.innerText = '✓';
+                } else {
+                    addWaterBtn.disabled = false;
+                    addWaterBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    addWaterBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                    addWaterBtn.innerText = '+1';
+                }
             } else {
-                addWaterBtn.disabled = false;
-                addWaterBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                addWaterBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
-                addWaterBtn.innerText = '+1';
+                console.warn('Elementos de água não encontrados para atualização da UI.');
             }
+
 
             // Atualizar caminhada
-            if (walkCompleted) {
-                walkStatusText.innerText = 'Hoje: Concluído';
-                toggleWalkBtn.innerText = '✓';
-                toggleWalkBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
-                toggleWalkBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
-                toggleWalkBtn.disabled = true;
+            if (walkStatusText && toggleWalkBtn) {
+                if (walkCompleted) {
+                    walkStatusText.innerText = 'Hoje: Concluído';
+                    toggleWalkBtn.innerText = '✓';
+                    toggleWalkBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                    toggleWalkBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    toggleWalkBtn.disabled = true;
+                } else {
+                    walkStatusText.innerText = 'Hoje: Pendente';
+                    toggleWalkBtn.innerText = 'Concluir';
+                    toggleWalkBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    toggleWalkBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+                    toggleWalkBtn.disabled = false;
+                }
             } else {
-                walkStatusText.innerText = 'Hoje: Pendente';
-                toggleWalkBtn.innerText = 'Concluir';
-                toggleWalkBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                toggleWalkBtn.classList.add('bg-green-500', 'hover:bg-green-600');
-                toggleWalkBtn.disabled = false;
+                console.warn('Elementos de caminhada não encontrados para atualização da UI.');
             }
+
 
             // Atualizar fruta
-            if (fruitCompleted) {
-                fruitStatusText.innerText = 'Hoje: Concluído';
-                toggleFruitBtn.innerText = '✓';
-                toggleFruitBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
-                toggleFruitBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
-                toggleFruitBtn.disabled = true;
+            if (fruitStatusText && toggleFruitBtn) {
+                if (fruitCompleted) {
+                    fruitStatusText.innerText = 'Hoje: Concluído';
+                    toggleFruitBtn.innerText = '✓';
+                    toggleFruitBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
+                    toggleFruitBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                    toggleFruitBtn.disabled = true;
+                } else {
+                    fruitStatusText.innerText = 'Hoje: Pendente';
+                    toggleFruitBtn.innerText = 'Concluir';
+                    toggleFruitBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                    toggleFruitBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
+                    toggleFruitBtn.disabled = false;
+                }
             } else {
-                fruitStatusText.innerText = 'Hoje: Pendente';
-                toggleFruitBtn.innerText = 'Concluir';
-                toggleFruitBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
-                toggleFruitBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
-                toggleFruitBtn.disabled = false;
+                console.warn('Elementos de fruta não encontrados para atualização da UI.');
             }
 
-            // Calcular e atualizar progresso geral
-            let completedHabitsCount = 0;
-            if (waterCount >= targetWater) completedHabitsCount++;
-            if (walkCompleted) completedHabitsCount++;
-            if (fruitCompleted) completedHabitsCount++;
 
-            const overallProgress = (completedHabitsCount / totalHabits) * 100;
-            overallProgressPercentage.innerText = `${Math.round(overallProgress)}%`;
-            overallProgressBar.style.width = `${Math.round(overallProgress)}%`;
+            // Calcular e atualizar progresso geral
+            if (overallProgressPercentage && overallProgressBar) {
+                let completedHabitsCount = 0;
+                if (waterCount >= targetWater) completedHabitsCount++;
+                if (walkCompleted) completedHabitsCount++;
+                if (fruitCompleted) completedHabitsCount++;
+
+                const overallProgress = (completedHabitsCount / totalHabits) * 100;
+                overallProgressPercentage.innerText = `${Math.round(overallProgress)}%`;
+                overallProgressBar.style.width = `${Math.round(overallProgress)}%`;
+            } else {
+                console.warn('Elementos de progresso geral não encontrados para atualização da UI.');
+            }
         }
 
         // --- Event Listeners para botões de ação dos hábitos ---
-        addWaterBtn.addEventListener('click', () => {
-            if (waterCount < targetWater) {
-                waterCount++;
+        if (addWaterBtn) {
+            addWaterBtn.addEventListener('click', () => {
+                console.log('Botão de água clicado!');
+                if (waterCount < targetWater) {
+                    waterCount++;
+                    updateUI(); // Atualiza a UI imediatamente
+                } else {
+                    showMessageModal('Você já atingiu sua meta de água para hoje!');
+                }
+            });
+        } else {
+            console.error('Botão de água não encontrado para adicionar listener.');
+        }
+
+
+        if (toggleWalkBtn) {
+            toggleWalkBtn.addEventListener('click', () => {
+                console.log('Botão de caminhada clicado!');
+                walkCompleted = !walkCompleted; // Alterna o estado
                 updateUI(); // Atualiza a UI imediatamente
-            } else {
-                showMessageModal('Você já atingiu sua meta de água para hoje!');
-            }
-        });
+            });
+        } else {
+            console.error('Botão de caminhada não encontrado para adicionar listener.');
+        }
 
-        toggleWalkBtn.addEventListener('click', () => {
-            walkCompleted = !walkCompleted; // Alterna o estado
-            updateUI(); // Atualiza a UI imediatamente
-        });
 
-        toggleFruitBtn.addEventListener('click', () => {
-            fruitCompleted = !fruitCompleted; // Alterna o estado
-            updateUI(); // Atualiza a UI imediatamente
-        });
+        if (toggleFruitBtn) {
+            toggleFruitBtn.addEventListener('click', () => {
+                console.log('Botão de fruta clicado!');
+                fruitCompleted = !fruitCompleted; // Alterna o estado
+                updateUI(); // Atualiza a UI imediatamente
+            });
+        } else {
+            console.error('Botão de fruta não encontrado para adicionar listener.');
+        }
 
-        watchVideoBtn.addEventListener('click', () => {
-            showMessageModal('Reproduzindo vídeo: "3 exercícios rápidos para fazer em casa!" (Funcionalidade simulada)');
-        });
+
+        if (watchVideoBtn) {
+            watchVideoBtn.addEventListener('click', () => {
+                console.log('Botão "Assistir Vídeo" clicado!');
+                showMessageModal('Reproduzindo vídeo: "3 exercícios rápidos para fazer em casa!" (Funcionalidade simulada)');
+            });
+        } else {
+            console.error('Botão "Assistir Vídeo" não encontrado para adicionar listener.');
+        }
+
 
         // --- Lógica de navegação entre seções ---
         const sections = {
@@ -374,32 +432,38 @@
         };
 
         function showSection(sectionName) {
+            console.log('showSection() chamado para:', sectionName);
             for (const key in sections) {
                 const section = sections[key];
-                if (key === sectionName) {
-                    section.main.classList.remove('hidden-section');
-                    if (section.tips) section.tips.classList.remove('hidden-section');
-                    section.button.classList.remove('text-gray-500');
-                    section.button.classList.add('text-green-600');
+                if (section.main && section.button) { // Garante que os elementos existem
+                    if (key === sectionName) {
+                        section.main.classList.remove('hidden-section');
+                        if (section.tips) section.tips.classList.remove('hidden-section');
+                        section.button.classList.remove('text-gray-500');
+                        section.button.classList.add('text-green-600');
+                    } else {
+                        section.main.classList.add('hidden-section');
+                        if (section.tips) section.tips.classList.add('hidden-section');
+                        section.button.classList.remove('text-green-600');
+                        section.button.classList.add('text-gray-500');
+                    }
                 } else {
-                    section.main.classList.add('hidden-section');
-                    if (section.tips) section.tips.classList.add('hidden-section');
-                    section.button.classList.remove('text-green-600');
-                    section.button.classList.add('text-gray-500');
+                    console.warn(`Seção ou botão da seção '${key}' não encontrado.`);
                 }
             }
         }
 
         // Adicionar event listeners para os botões de navegação
-        navHomeBtn.addEventListener('click', () => showSection('home'));
-        navProgressBtn.addEventListener('click', () => showSection('progress'));
-        navTipsBtn.addEventListener('click', () => showSection('tips'));
-        navSettingsBtn.addEventListener('click', () => showSection('settings'));
+        if (navHomeBtn) navHomeBtn.addEventListener('click', () => showSection('home')); else console.error('Botão de navegação Home não encontrado.');
+        if (navProgressBtn) navProgressBtn.addEventListener('click', () => showSection('progress')); else console.error('Botão de navegação Progresso não encontrado.');
+        if (navTipsBtn) navTipsBtn.addEventListener('click', () => showSection('tips')); else console.error('Botão de navegação Dicas não encontrado.');
+        if (navSettingsBtn) navSettingsBtn.addEventListener('click', () => showSection('settings')); else console.error('Botão de navegação Configurações não encontrado.');
 
         // Exibir a seção de Início por padrão ao carregar
         window.onload = () => {
-             updateUI(); // Garante que a UI seja inicializada corretamente
-             showSection('home'); // Garante que a seção inicial seja exibida
+            console.log('Window loaded!');
+            updateUI(); // Garante que a UI seja inicializada corretamente
+            showSection('home'); // Garante que a seção inicial seja exibida
         };
     </script>
 </body>
