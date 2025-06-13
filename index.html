@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vida Simples - Modelo Visual Funcional com Múltiplas Seções</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Cor de fundo suave */
+        }
+        /* Estilo para simular um modal de mensagem, substituindo alert() */
+        .message-modal {
+            display: none; /* Escondido por padrão */
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+            justify-content: center;
+            align-items: center;
+        }
+        .message-modal-content {
+            background-color: #fff;
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            max-width: 300px;
+        }
+        .message-modal-content button {
+            background-color: #10B981; /* green-500 */
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-top: 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .message-modal-content button:hover {
+            background-color: #059669; /* green-600 */
+        }
+        .hidden-section {
+            display: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-auto overflow-hidden">
+        <!-- Cabeçalho do App -->
+        <div class="bg-gradient-to-r from-green-400 to-green-600 p-6 text-white text-center rounded-t-2xl">
+            <h1 class="text-3xl font-bold mb-1">Vida Simples</h1>
+            <p class="text-sm opacity-90">Sua jornada para uma vida mais saudável</p>
+        </div>
+
+        <!-- Conteúdo das Seções -->
+        <div id="content-area">
+            <!-- Seção de Início -->
+            <div id="home-section" class="p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Olá, Alberto! 👋</h2>
+                <p class="text-gray-600 mb-6">Foco de hoje: Mais energia para a filha!</p>
+
+                <!-- Progresso Geral -->
+                <div class="mb-6 bg-blue-100 p-4 rounded-xl shadow-inner">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-blue-700">Seu Progresso Semanal</span>
+                        <span id="overall-progress-percentage" class="text-sm font-semibold text-blue-800">0%</span>
+                    </div>
+                    <div class="w-full bg-blue-200 rounded-full h-2.5">
+                        <div id="overall-progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Hábitos do Dia -->
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Hábitos do Dia</h3>
+
+                <div class="space-y-4">
+                    <!-- Cartão de Hábito: Beber Água -->
+                    <div class="bg-gray-50 p-4 rounded-xl shadow-sm flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="bg-blue-200 p-2 rounded-full mr-3">
+                                💧
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-700">Beber 8 copos de água</p>
+                                <p id="water-progress-text" class="text-sm text-gray-500">0/8 copos concluídos</p>
+                            </div>
+                        </div>
+                        <div class="relative w-20 h-2 bg-gray-300 rounded-full">
+                            <div id="water-progress-bar" class="bg-blue-500 h-full rounded-full" style="width: 0%;"></div>
+                        </div>
+                        <button id="add-water-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded-full text-sm">
+                            +1
+                        </button>
+                    </div>
+
+                    <!-- Cartão de Hábito: Caminhada -->
+                    <div class="bg-gray-50 p-4 rounded-xl shadow-sm flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="bg-green-200 p-2 rounded-full mr-3">
+                                🚶
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-700">Caminhar 15 minutos</p>
+                                <p id="walk-status-text" class="text-sm text-gray-500">Hoje: Pendente</p>
+                            </div>
+                        </div>
+                        <button id="toggle-walk-btn" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 rounded-full text-sm">
+                            Concluir
+                        </button>
+                    </div>
+
+                    <!-- Cartão de Hábito: Comer uma fruta -->
+                    <div class="bg-gray-50 p-4 rounded-xl shadow-sm flex items-center justify-between">
+                        <div class="flex items-center">
+                            <div class="bg-yellow-200 p-2 rounded-full mr-3">
+                                🍎
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-700">Comer uma fruta</p>
+                                <p id="fruit-status-text" class="text-sm text-gray-500">Hoje: Pendente</p>
+                            </div>
+                        </div>
+                        <button id="toggle-fruit-btn" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-3 rounded-full text-sm">
+                            Concluir
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção de Dicas/Conteúdo Rápido (para Home) -->
+            <div id="home-tips-section" class="bg-gray-100 p-6 rounded-b-2xl mt-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-3">Dica Rápida de Hoje:</h3>
+                <div class="bg-white p-4 rounded-xl shadow-sm">
+                    <p class="text-gray-700 font-medium mb-2">"3 exercícios rápidos para fazer em casa!"</p>
+                    <p class="text-sm text-gray-600">Assista ao vídeo e ganhe mais energia.</p>
+                    <button id="watch-video-btn" class="mt-3 w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-xl text-sm">
+                        Assistir Vídeo
+                    </button>
+                </div>
+            </div>
+
+            <!-- Seção de Progresso (Inicialmente oculta) -->
+            <div id="progress-section" class="p-6 hidden-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Seu Progresso Detalhado</h2>
+                <p class="text-gray-600 mb-4">Aqui você pode ver seus avanços ao longo do tempo.</p>
+                <div class="bg-blue-100 p-4 rounded-xl shadow-inner mb-4">
+                    <p class="text-blue-700 font-medium">Histórico Semanal:</p>
+                    <ul class="list-disc list-inside text-gray-700 mt-2">
+                        <li>Semana 1: 70% dos hábitos concluídos</li>
+                        <li>Semana 2: 75% dos hábitos concluídos</li>
+                        <li>Semana 3: 60% dos hábitos concluídos (placeholder)</li>
+                    </ul>
+                </div>
+                <div class="bg-green-100 p-4 rounded-xl shadow-inner">
+                    <p class="text-green-700 font-medium">Metas Atuais:</p>
+                    <ul class="list-disc list-inside text-gray-700 mt-2">
+                        <li>Reduzir açúcar: <span class="font-semibold">Em Andamento</span></li>
+                        <li>Dormir 7h/noite: <span class="font-semibold">Foco</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Seção de Dicas (Inicialmente oculta) -->
+            <div id="tips-section" class="p-6 hidden-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Dicas para uma Vida Simples</h2>
+                <p class="text-gray-600 mb-4">Conteúdo direto e prático para te ajudar.</p>
+                <div class="space-y-4">
+                    <div class="bg-gray-50 p-4 rounded-xl shadow-sm">
+                        <h4 class="font-semibold text-gray-700">Guia Rápido: Alimentação Equilibrada</h4>
+                        <p class="text-sm text-gray-600 mt-1">Conheça 5 alimentos essenciais para sua dieta.</p>
+                        <button class="mt-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1.5 px-3 rounded-lg text-xs">Ler Dica</button>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl shadow-sm">
+                        <h4 class="font-semibold text-gray-700">Exercícios em Casa: Sem Desculpas!</h4>
+                        <p class="text-sm text-gray-600 mt-1">Série de 10 minutos para iniciar hoje.</p>
+                        <button class="mt-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1.5 px-3 rounded-lg text-xs">Assistir Vídeo</button>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl shadow-sm">
+                        <h4 class="font-semibold text-gray-700">Melhore seu Sono: Dicas Essenciais</h4>
+                        <p class="text-sm text-gray-600 mt-1">Pequenas mudanças para grandes resultados.</p>
+                        <button class="mt-2 bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-1.5 px-3 rounded-lg text-xs">Ler Dica</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Seção de Configuração (Inicialmente oculta) -->
+            <div id="settings-section" class="p-6 hidden-section">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Configurações</h2>
+                <p class="text-gray-600 mb-4">Gerencie suas preferências e conta.</p>
+
+                <div class="space-y-4">
+                    <div class="bg-gray-50 p-4 rounded-xl shadow-sm">
+                        <label for="name-input" class="block text-sm font-medium text-gray-700 mb-1">Seu Nome:</label>
+                        <input type="text" id="name-input" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" value="Alberto Luiz">
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-xl shadow-sm">
+                        <label for="goal-select" class="block text-sm font-medium text-gray-700 mb-1">Meta Principal:</label>
+                        <select id="goal-select" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option>Mais energia</option>
+                            <option>Perder peso</option>
+                            <option>Dormir melhor</option>
+                        </select>
+                    </div>
+                    <button class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-xl text-sm">
+                        Salvar Configurações
+                    </button>
+                    <div class="bg-gray-50 p-4 rounded-xl shadow-sm">
+                        <p class="text-gray-700 font-medium">Seu ID de Usuário:</p>
+                        <p id="user-id-display" class="text-sm text-gray-600 break-all">Carregando...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navegação Inferior -->
+        <div class="flex justify-around p-4 bg-white border-t border-gray-200 rounded-b-2xl">
+            <button id="nav-home" class="flex flex-col items-center text-green-600 hover:text-green-700">
+                <span class="text-xl">🏠</span>
+                <span class="text-xs">Início</span>
+            </button>
+            <button id="nav-progress" class="flex flex-col items-center text-gray-500 hover:text-green-600">
+                <span class="text-xl">📊</span>
+                <span class="text-xs">Progresso</span>
+            </button>
+            <button id="nav-tips" class="flex flex-col items-center text-gray-500 hover:text-green-600">
+                <span class="text-xl">💡</span>
+                <span class="text-xs">Dicas</span>
+            </button>
+            <button id="nav-settings" class="flex flex-col items-center text-gray-500 hover:text-green-600">
+                <span class="text-xl">⚙️</span>
+                <span class="text-xs">Config.</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal de Mensagem (Substituto do alert()) -->
+    <div id="message-modal" class="message-modal">
+        <div class="message-modal-content">
+            <p id="modal-message-text"></p>
+            <button onclick="document.getElementById('message-modal').style.display='none'">OK</button>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Exibir modal de mensagem
+        function showMessageModal(message) {
+            document.getElementById('modal-message-text').innerText = message;
+            document.getElementById('message-modal').style.display = 'flex';
+        }
+
+        // Variáveis globais para Firebase e usuário
+        let app;
+        let db;
+        let auth;
+        let isAuthReady = false; // Flag para indicar se a autenticação foi concluída
+
+        // --- Configuração do Firebase ---
+        // As variáveis __app_id, __firebase_config e __initial_auth_token são fornecidas pelo ambiente Canvas
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // Inicializar Firebase e Firestore
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            console.log('Firebase e Firestore inicializados.');
+        } catch (error) {
+            console.error('Erro ao inicializar Firebase:', error);
+            showMessageModal('Erro ao inicializar o aplicativo. Tente novamente.');
+        }
+
+        // Listener de estado de autenticação
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                console.log('Usuário autenticado:', user.uid);
+                document.getElementById('user-id-display').innerText = user.uid; // Exibir UID na Configuração
+            } else {
+                // Se não há usuário, tenta autenticar anonimamente
+                try {
+                    await signInAnonymously(auth);
+                    console.log('Autenticado anonimamente. User ID:', auth.currentUser?.uid);
+                    document.getElementById('user-id-display').innerText = auth.currentUser?.uid || 'Erro ao obter ID'; // Exibir UID
+                } catch (error) {
+                    console.error('Erro na autenticação anônima:', error);
+                    showMessageModal('Não foi possível fazer login anônimo. O progresso não será salvo.');
+                    document.getElementById('user-id-display').innerText = 'Não autenticado'; // Indicar falha
+                }
+            }
+            isAuthReady = true; // Define a flag como true após a verificação inicial de autenticação
+            console.log('Autenticação pronta. User ID final:', auth.currentUser?.uid || 'N/A');
+            setupRealtimeListener(); // Configura o listener do Firestore após a autenticação
+        });
+
+        // Tenta fazer login com o token personalizado se disponível
+        if (initialAuthToken) {
+            signInWithCustomToken(auth, initialAuthToken)
+                .then((userCredential) => {
+                    console.log('Login com token personalizado bem-sucedido:', userCredential.user.uid);
+                })
+                .catch((error) => {
+                    console.error('Erro no login com token personalizado:', error);
+                    // Se o token falhar, onAuthStateChanged vai tentar login anônimo
+                });
+        }
+
+        // --- Variáveis de estado do App (default) ---
+        let waterCount = 0;
+        let walkCompleted = false;
+        let fruitCompleted = false;
+        const targetWater = 8;
+        const totalHabits = 3; // Água, Caminhada, Fruta
+
+        // --- Referências aos elementos HTML ---
+        const waterProgressText = document.getElementById('water-progress-text');
+        const waterProgressBar = document.getElementById('water-progress-bar');
+        const addWaterBtn = document.getElementById('add-water-btn');
+        const walkStatusText = document.getElementById('walk-status-text');
+        const toggleWalkBtn = document.getElementById('toggle-walk-btn');
+        const fruitStatusText = document.getElementById('fruit-status-text');
+        const toggleFruitBtn = document.getElementById('toggle-fruit-btn');
+        const overallProgressPercentage = document.getElementById('overall-progress-percentage');
+        const overallProgressBar = document.getElementById('overall-progress-bar');
+        const watchVideoBtn = document.getElementById('watch-video-btn');
+
+        // Referências às seções
+        const homeSection = document.getElementById('home-section');
+        const homeTipsSection = document.getElementById('home-tips-section');
+        const progressSection = document.getElementById('progress-section');
+        const tipsSection = document.getElementById('tips-section');
+        const settingsSection = document.getElementById('settings-section');
+
+        // Referências aos botões de navegação
+        const navHomeBtn = document.getElementById('nav-home');
+        const navProgressBtn = document.getElementById('nav-progress');
+        const navTipsBtn = document.getElementById('nav-tips');
+        const navSettingsBtn = document.getElementById('nav-settings');
+
+        // --- Funções para atualizar a UI ---
+        function updateUI() {
+            // Atualizar água
+            waterProgressText.innerText = `${waterCount}/${targetWater} copos concluídos`;
+            const waterProgressWidth = (waterCount / targetWater) * 100;
+            waterProgressBar.style.width = `${Math.min(waterProgressWidth, 100)}%`; // Limita a 100%
+            if (waterCount >= targetWater) {
+                addWaterBtn.disabled = true;
+                addWaterBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                addWaterBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                addWaterBtn.innerText = '✓';
+            } else {
+                addWaterBtn.disabled = false;
+                addWaterBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                addWaterBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                addWaterBtn.innerText = '+1';
+            }
+
+            // Atualizar caminhada
+            if (walkCompleted) {
+                walkStatusText.innerText = 'Hoje: Concluído';
+                toggleWalkBtn.innerText = '✓';
+                toggleWalkBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                toggleWalkBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                toggleWalkBtn.disabled = true;
+            } else {
+                walkStatusText.innerText = 'Hoje: Pendente';
+                toggleWalkBtn.innerText = 'Concluir';
+                toggleWalkBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                toggleWalkBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+                toggleWalkBtn.disabled = false;
+            }
+
+            // Atualizar fruta
+            if (fruitCompleted) {
+                fruitStatusText.innerText = 'Hoje: Concluído';
+                toggleFruitBtn.innerText = '✓';
+                toggleFruitBtn.classList.remove('bg-yellow-500', 'hover:bg-yellow-600');
+                toggleFruitBtn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                toggleFruitBtn.disabled = true;
+            } else {
+                fruitStatusText.innerText = 'Hoje: Pendente';
+                toggleFruitBtn.innerText = 'Concluir';
+                toggleFruitBtn.classList.remove('bg-gray-400', 'cursor-not-allowed');
+                toggleFruitBtn.classList.add('bg-yellow-500', 'hover:bg-yellow-600');
+                toggleFruitBtn.disabled = false;
+            }
+
+            // Calcular e atualizar progresso geral
+            let completedHabitsCount = 0;
+            if (waterCount >= targetWater) completedHabitsCount++;
+            if (walkCompleted) completedHabitsCount++;
+            if (fruitCompleted) completedHabitsCount++;
+
+            const overallProgress = (completedHabitsCount / totalHabits) * 100;
+            overallProgressPercentage.innerText = `${Math.round(overallProgress)}%`;
+            overallProgressBar.style.width = `${Math.round(overallProgress)}%`;
+        }
+
+        // --- Funções para interagir com o Firestore ---
+        async function saveHabitsData() {
+            const currentUid = auth.currentUser?.uid;
+            if (!isAuthReady || !currentUid || !db) {
+                console.warn('Firebase, UID do usuário ou banco de dados não estão prontos para salvar dados.');
+                showMessageModal('Não foi possível salvar o progresso. Verifique sua conexão ou tente novamente.');
+                return;
+            }
+            try {
+                // O caminho para dados privados é /artifacts/{appId}/users/{userId}/{your_collection_name}
+                const habitsDocRef = doc(db, `artifacts/${appId}/users/${currentUid}/habits`, 'current_day_habits');
+                await setDoc(habitsDocRef, {
+                    waterCount: waterCount,
+                    walkCompleted: walkCompleted,
+                    fruitCompleted: fruitCompleted,
+                    lastUpdated: new Date()
+                }, { merge: true }); // Usar merge para não sobrescrever outros campos
+                console.log('Dados de hábitos salvos com sucesso!');
+            } catch (error) {
+                console.error('Erro ao salvar dados de hábitos:', error);
+                showMessageModal('Erro ao salvar o progresso. Tente novamente.');
+            }
+        }
+
+        function setupRealtimeListener() {
+            const currentUid = auth.currentUser?.uid;
+            if (!isAuthReady || !currentUid || !db) {
+                console.warn('Firebase, UID do usuário ou banco de dados não estão prontos para configurar o listener.');
+                return;
+            }
+            // O caminho para dados privados é /artifacts/{appId}/users/{userId}/{your_collection_name}
+            const habitsDocRef = doc(db, `artifacts/${appId}/users/${currentUid}/habits`, 'current_day_habits');
+            onSnapshot(habitsDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    waterCount = data.waterCount || 0;
+                    walkCompleted = data.walkCompleted || false;
+                    fruitCompleted = data.fruitCompleted || false;
+                    console.log('Dados de hábitos carregados:', data);
+                } else {
+                    console.log('Nenhum dado de hábito encontrado. Usando padrões.');
+                    // Inicializa os dados no Firestore se não existirem
+                    saveHabitsData();
+                }
+                updateUI(); // Atualiza a UI com os dados carregados ou padrão
+            }, (error) => {
+                console.error('Erro ao receber updates do Firestore:', error);
+                // Exibir erro no modal para o usuário
+                showMessageModal('Erro ao carregar seu progresso. Verifique as regras do Firestore. Detalhes no console.');
+            });
+        }
+
+        // --- Event Listeners para botões de ação dos hábitos ---
+        addWaterBtn.addEventListener('click', () => {
+            if (waterCount < targetWater) {
+                waterCount++;
+                saveHabitsData(); // Salva no Firestore
+            } else {
+                showMessageModal('Você já atingiu sua meta de água para hoje!');
+            }
+        });
+
+        toggleWalkBtn.addEventListener('click', () => {
+            walkCompleted = !walkCompleted; // Alterna o estado
+            saveHabitsData(); // Salva no Firestore
+        });
+
+        toggleFruitBtn.addEventListener('click', () => {
+            fruitCompleted = !fruitCompleted; // Alterna o estado
+            saveHabitsData(); // Salva no Firestore
+        });
+
+        watchVideoBtn.addEventListener('click', () => {
+            showMessageModal('Reproduzindo vídeo: "3 exercícios rápidos para fazer em casa!" (Funcionalidade simulada)');
+        });
+
+        // --- Lógica de navegação entre seções ---
+        const sections = {
+            'home': { main: homeSection, tips: homeTipsSection, button: navHomeBtn },
+            'progress': { main: progressSection, tips: null, button: navProgressBtn },
+            'tips': { main: tipsSection, tips: null, button: navTipsBtn },
+            'settings': { main: settingsSection, tips: null, button: navSettingsBtn }
+        };
+
+        function showSection(sectionName) {
+            for (const key in sections) {
+                const section = sections[key];
+                if (key === sectionName) {
+                    section.main.classList.remove('hidden-section');
+                    if (section.tips) section.tips.classList.remove('hidden-section');
+                    section.button.classList.remove('text-gray-500');
+                    section.button.classList.add('text-green-600');
+                } else {
+                    section.main.classList.add('hidden-section');
+                    if (section.tips) section.tips.classList.add('hidden-section');
+                    section.button.classList.remove('text-green-600');
+                    section.button.classList.add('text-gray-500');
+                }
+            }
+        }
+
+        // Adicionar event listeners para os botões de navegação
+        navHomeBtn.addEventListener('click', () => showSection('home'));
+        navProgressBtn.addEventListener('click', () => showSection('progress'));
+        navTipsBtn.addEventListener('click', () => showSection('tips'));
+        navSettingsBtn.addEventListener('click', () => showSection('settings'));
+
+        // Exibir a seção de Início por padrão ao carregar
+        window.onload = () => {
+             // onAuthStateChanged irá chamar setupRealtimeListener quando estiver pronto.
+             // Não há necessidade de chamar updateUI aqui diretamente, pois onSnapshot fará isso.
+             showSection('home'); // Garante que a seção inicial seja exibida
+        };
+    </script>
+</body>
+</html>
